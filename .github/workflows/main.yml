@@ -1,0 +1,49 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ test_opencl_ci ]
+  pull_request:
+    branches: [ test_opencl_ci ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-18.04
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: echo Hello, world!
+
+      # Runs a set of commands using the runners shell
+      - name: Install openCL Intel runtime lib
+        run: |
+          mkdir neo
+          cd neo
+          wget https://github.com/intel/compute-runtime/releases/download/20.44.18297/intel-gmmlib_20.3.2_amd64.deb
+          wget https://github.com/intel/intel-graphics-compiler/releases/download/igc-1.0.5353/intel-igc-core_1.0.5353_amd64.deb
+          wget https://github.com/intel/intel-graphics-compiler/releases/download/igc-1.0.5353/intel-igc-opencl_1.0.5353_amd64.deb
+          wget https://github.com/intel/compute-runtime/releases/download/20.44.18297/intel-opencl_20.44.18297_amd64.deb
+          wget https://github.com/intel/compute-runtime/releases/download/20.44.18297/intel-ocloc_20.44.18297_amd64.deb
+          wget https://github.com/intel/compute-runtime/releases/download/20.44.18297/intel-level-zero-gpu_1.0.18297_amd64.deb
+          sudo dpkg -i *.deb
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+      - name: Install pyopencl
+        run: pip install pyopencl
+      - name: Run Pytest
+        run: python -m pytest -s -v
