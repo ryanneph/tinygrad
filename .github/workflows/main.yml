@@ -45,5 +45,8 @@ jobs:
         run: pip install -r requirements.txt
       - name: Install pyopencl
         run: pip install pyopencl
+      - name: Check for CL platforms
+        run: |
+          python -c 'import pyopencl as cl; print(cl.get_platforms())'
       - name: Run Pytest
         run: python -m pytest -s -v
